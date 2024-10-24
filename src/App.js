@@ -1,38 +1,34 @@
-import React, { useState } from 'react'
-
+import React, { useEffect, useState } from "react";
+import { SignUp, Login, Homepage } from "./pages";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 const App = () => {
+  const[token,setToken]=useState(false)
 
-  const[formData,setFormData]=useState({
-    fullName:'',
-    email:'',
-    password:''
-  })
-
-  console.log(formData);
-  
-
-  function handleChange(event){
-    setFormData((prevFormData)=>{
-      return{
-        ...prevFormData,
-        [event.target.name]:event.target.value
-      }
-    })
-
+  if(token){
+    sessionStorage.setItem('token',JSON.stringify(token))
   }
 
+  useEffect(() => {
+    if(sessionStorage.getItem('token')){
+      let data=JSON.parse(sessionStorage.getItem('token'))
+      setToken(data)
+    }
+    
+    }, [])
+  
+
   return (
-    <div>
-      <form action="">
-<input placeholder='Fullname' name='fullName' onChange={handleChange}/>
-<input placeholder='Email' name='email' onChange={handleChange}/>
-<input placeholder='Password' name='password' onChange={handleChange}/>
-<button type='submit'>Submit</button>
+    <Router>
+      <div>
+        <Routes>
+          <Route path={"/signup"} element={<SignUp/>} />
+          <Route path={"/"} element={<Login setToken={setToken}/>} />
 
+          {token?<Route path={"/homepage"} element={<Homepage token={token}/>} />:""}
+        </Routes>
+      </div>
+    </Router>
+  );
+};
 
-      </form>
-    </div>
-  )
-}
-
-export default App
+export default App;
